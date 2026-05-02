@@ -1,3 +1,4 @@
+// Package pokecache provides simple caching for locations retrieved from PokeAPI
 package pokecache
 
 import (
