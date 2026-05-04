@@ -9,14 +9,9 @@ import (
 	"github.com/tonyserranodev/pokedexcli/internal/pokeapi"
 )
 
-type cliCommand struct {
-	name        string
-	description string
-	callback    func(*config, ...string) error
-}
-
 type config struct {
 	pokeAPIClient pokeapi.Client
+	pokedex       *pokeapi.Pokedex
 	Next          *string
 	Previous      *string
 }
@@ -24,7 +19,7 @@ type config struct {
 func startRepl(cfg *config) {
 
 	reader := bufio.NewScanner(os.Stdin)
-	commands := getCommands(cfg)
+	commands := getCommands()
 	for {
 		fmt.Print("Pokedex > ")
 
@@ -53,7 +48,13 @@ func startRepl(cfg *config) {
 	}
 }
 
-func getCommands(cfg *config) map[string]cliCommand {
+type cliCommand struct {
+	name        string
+	description string
+	callback    func(*config, ...string) error
+}
+
+func getCommands() map[string]cliCommand {
 	return map[string]cliCommand{
 		"exit": {
 			name:        "exit",
@@ -76,9 +77,24 @@ func getCommands(cfg *config) map[string]cliCommand {
 			callback:    commandMapBack,
 		},
 		"explore": {
-			name:        "explore",
+			name:        "explore <location>",
 			description: "List pokemon encounters for the given location name",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch <pokemon>",
+			description: "Attempt to catch a pokemon. The higher the pokemon experience the more difficult it will be to catch",
+			callback:    commandCatch,
+		},
+		"inspect": {
+			name:        "inspect <pokemon>",
+			description: "List information for the given pokemon",
+			callback:    commandInspect,
+		},
+		"clear": {
+			name:        "clear",
+			description: "Clear the screen",
+			callback:    commandClear,
 		},
 	}
 }
