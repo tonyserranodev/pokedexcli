@@ -10,14 +10,15 @@ import (
 )
 
 type config struct {
-	pokeAPIClient pokeapi.Client
-	pokedex       *pokeapi.Pokedex
-	Next          *string
-	Previous      *string
+	pokeAPIClient    pokeapi.Client
+	pokedex          *pokeapi.Pokedex
+	Next             *string
+	Previous         *string
+	VisitedLocations map[string]struct{}
 }
 
 func startRepl(cfg *config) {
-
+	commands := getCommands()
 	l, err := readline.NewEx(&readline.Config{
 		Prompt:          "Pokedex > ",
 		HistoryFile:     "/tmp/pokedex_history.tmp",
@@ -27,8 +28,10 @@ func startRepl(cfg *config) {
 	if err != nil {
 		panic(err)
 	}
-	commands := getCommands()
+	defer l.Close()
 	for {
+		updateCompleter(commands, l, cfg)
+
 		line, err := l.Readline()
 		if err != nil {
 			break
@@ -113,6 +116,36 @@ func getCommands() map[string]cliCommand {
 		},
 	}
 }
+
+func updateCompleter(commands map[string]cliCommand, l *readline.Instance, cfg *config) {
+	var items []readline.PrefixCompleterInterface
+
+	// Build location items from VisitedLocations
+	var locationItems []readline.PrefixCompleterInterface
+	for name := range cfg.VisitedLocations {
+		locationItems = append(locationItems, readline.PcItem(name))
+	}
+
+	// Build pokemon items from Pokedex
+	var pokemonItems []readline.PrefixCompleterInterface
+	for _, p := range cfg.pokedex.Caught {
+		pokemonItems = append(pokemonItems, readline.PcItem(p.Name))
+	}
+
+	// assemble command tree
+
+	items = append(items,
+		readline.PcItem("explore", locationItems...),
+		readline.PcItem("inspect", pokemonItems...),
+		readline.PcItem("catch", pokemonItems...),
+		readline.PcItem("map"),
+		readline.PcItem("mapb"),
+		readline.PcItem("exit"),
+		readline.PcItem("clear"),
+	)
+	l.Config.AutoComplete = readline.NewPrefixCompleter(items...)
+}
+
 func cleanInput(text string) []string {
 	output := strings.ToLower(text)
 	words := strings.Fields(output)

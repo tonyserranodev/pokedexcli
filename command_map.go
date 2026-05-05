@@ -10,6 +10,11 @@ func commandMap(cfg *config, args ...string) error {
 	if err != nil {
 		return err
 	}
+
+	for _, area := range res.Results {
+		cfg.VisitedLocations[area.Name] = struct{}{}
+	}
+
 	cfg.Next = res.Next
 	cfg.Previous = res.Previous
 	for _, location := range res.Results {
