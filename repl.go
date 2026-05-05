@@ -7,6 +7,7 @@ import (
 	"github.com/chzyer/readline"
 
 	"github.com/tonyserranodev/pokedexcli/internal/pokeapi"
+	"github.com/tonyserranodev/pokedexcli/internal/ui"
 )
 
 type config struct {
@@ -15,9 +16,12 @@ type config struct {
 	Next             *string
 	Previous         *string
 	VisitedLocations map[string]struct{}
+	Styles           ui.Styles
 }
 
 func startRepl(cfg *config) {
+
+	fmt.Println(pokemonTitle)
 	commands := getCommands()
 	l, err := readline.NewEx(&readline.Config{
 		Prompt:          "Pokedex > ",
@@ -30,7 +34,7 @@ func startRepl(cfg *config) {
 	}
 	defer l.Close()
 	for {
-		updateCompleter(commands, l, cfg)
+		updateCompleter(l, cfg)
 
 		line, err := l.Readline()
 		if err != nil {
@@ -117,7 +121,7 @@ func getCommands() map[string]cliCommand {
 	}
 }
 
-func updateCompleter(commands map[string]cliCommand, l *readline.Instance, cfg *config) {
+func updateCompleter(l *readline.Instance, cfg *config) {
 	var items []readline.PrefixCompleterInterface
 
 	// Build location items from VisitedLocations

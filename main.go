@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/tonyserranodev/pokedexcli/internal/pokeapi"
+	"github.com/tonyserranodev/pokedexcli/internal/ui"
 )
 
 func main() {
@@ -13,6 +14,7 @@ func main() {
 		pokeAPIClient:    pokeClient,
 		pokedex:          pokedex,
 		VisitedLocations: make(map[string]struct{}),
+		Styles:           ui.NewStyles(),
 	}
 	startRepl(cfg)
 }

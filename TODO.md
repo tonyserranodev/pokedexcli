@@ -1,9 +1,10 @@
 # TODO
 
 ### in progress
+- [ ] ui improvement
+    - [ ]
 
 ### future
-- [ ] ui improvement
 - [ ] great ball, ultra ball, master ball
 - [ ] battle system
 - [ ] party system

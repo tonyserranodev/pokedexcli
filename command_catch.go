@@ -20,12 +20,15 @@ func commandCatch(cfg *config, args ...string) error {
 	baseExp := pokemon.BaseExperience
 	fmt.Printf("Throwing a Pokeball at %s...\n", name)
 	if shouldCatch(baseExp) {
-		fmt.Printf("%s was caught!\n", name)
+		caughtMsg := fmt.Sprintf("%s was caught!", name)
+		fmt.Println(cfg.Styles.Colorize(caughtMsg, "green"))
+
 		cfg.pokedex.Caught[name] = pokemon
 		fmt.Println("You may now inspect it with the inspect command.")
 		return nil
 	}
-	fmt.Printf(" %s escaped!\n", name)
+	failedMsg := fmt.Sprintf(" %s escaped!", name)
+	fmt.Println(cfg.Styles.Colorize(failedMsg, "red"))
 	return nil
 }
 
