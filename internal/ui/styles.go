@@ -19,10 +19,11 @@ func NewStyles() Styles {
 			"white":   "\033[37m",
 		},
 		Decorations: map[string]string{
-			"bold":      "\033[22m",
-			"italic":    "\033[23m",
-			"underline": "\033[24m",
-			"strike":    "\033[25m",
+			"re":        "\033[0m",
+			"bold":      "\033[1m",
+			"italic":    "\033[3m",
+			"underline": "\033[4m",
+			"strike":    "\033[9m",
 		},
 	}
 }
