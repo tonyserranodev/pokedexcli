@@ -24,7 +24,7 @@ func startRepl(cfg *config) {
 	fmt.Println(pokemonTitle)
 	commands := getCommands()
 	l, err := readline.NewEx(&readline.Config{
-		Prompt:          "Pokedex > ",
+		Prompt:          cfg.Styles.Render("Pokedex > ", "blue", "bold"),
 		HistoryFile:     "/tmp/pokedex_history.tmp",
 		InterruptPrompt: "^C",
 		EOFPrompt:       "exit",

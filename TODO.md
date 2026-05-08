@@ -1,11 +1,11 @@
 # TODO
 
 ### in progress
-- [ ] ui improvement
-    - [ ]
-
+- [x] add error handling for
+    - [x] explore
+    - [x] catch
 ### future
 - [ ] great ball, ultra ball, master ball
-- [ ] battle system
 - [ ] party system
+- [ ] battle system
 - [ ] leveling system

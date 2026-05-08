@@ -16,7 +16,7 @@ func commandInspect(cfg *config, args ...string) error {
 		return errors.New("you have not caught that pokemon")
 	}
 
-	lines := cfg.Styles.FormatPokemon(pokemon)
+	lines := cfg.Styles.FormatPokemonInspect(pokemon)
 
 	cfg.Styles.DrawBox(pokemon.Name, lines)
 	return nil

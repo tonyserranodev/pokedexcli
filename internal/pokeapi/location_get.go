@@ -2,6 +2,7 @@ package pokeapi
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -27,6 +28,14 @@ func (c *Client) GetLocation(locationName string) (Location, error) {
 		return Location{}, err
 	}
 	defer res.Body.Close()
+
+	if res.StatusCode == http.StatusNotFound {
+		return Location{}, fmt.Errorf("location does not exist: %s", locationName)
+	}
+
+	if res.StatusCode > 299 {
+		return Location{}, fmt.Errorf("bad statusCode: %v", res.StatusCode)
+	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {

@@ -18,7 +18,7 @@ func (s Styles) DrawBox(title string, lines []string) {
 		}
 	}
 
-	title = s.Render(capitalize(title), "green", "underline")
+	title = s.Render(capitalize(title), "green", "bold", "italic")
 	fmt.Printf("┌ %s %s┐\n", title, strings.Repeat("-", width-visualWidth(title)))
 
 	for _, line := range lines {
@@ -30,12 +30,12 @@ func (s Styles) DrawBox(title string, lines []string) {
 	fmt.Printf("└%s┘\n", strings.Repeat("-", width+2))
 }
 
-func (s Styles) FormatPokemon(p pokeapi.Pokemon) []string {
+func (s Styles) FormatPokemonInspect(p pokeapi.Pokemon) []string {
 	lines := []string{
 		fmt.Sprintf("%s: %d", s.Colorize("Height", "yellow"), p.Height),
 		fmt.Sprintf("%s: %d", s.Colorize("Weight", "yellow"), p.Weight),
 		"",
-		s.Colorize("Stats:", "blue"),
+		s.Colorize("Stats:", "cyan"),
 	}
 
 	maxNameLen := 0
@@ -50,7 +50,7 @@ func (s Styles) FormatPokemon(p pokeapi.Pokemon) []string {
 		lines = append(lines, fmt.Sprintf(fString, s.Colorize(stat.Stat.Name, "yellow"), stat.BaseStat))
 	}
 
-	lines = append(lines, "", s.Colorize("Types:", "blue"))
+	lines = append(lines, "", s.Colorize("Types:", "cyan"))
 	for _, t := range p.Types {
 		lines = append(lines, fmt.Sprintf(" - %s", s.Colorize(t.Type.Name, "yellow")))
 	}
