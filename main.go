@@ -13,6 +13,7 @@ func main() {
 	cfg := &config{
 		pokeAPIClient:    pokeClient,
 		pokedex:          pokedex,
+		Party:            *pokeapi.NewParty(),
 		VisitedLocations: make(map[string]struct{}),
 		Styles:           ui.NewStyles(),
 	}

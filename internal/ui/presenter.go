@@ -65,6 +65,14 @@ func (s Styles) FormatPokedex(pokedex *pokeapi.Pokedex) []string {
 	return lines
 }
 
+func (s Styles) FormatParty(party []string) []string {
+	lines := []string{}
+	for _, name := range party {
+		lines = append(lines, s.Colorize(fmt.Sprintf(" %s", capitalize(name)), "yellow"))
+	}
+	return lines
+}
+
 func (s Styles) Render(text string, color string, decorations ...string) string {
 	out := text
 

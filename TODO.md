@@ -1,11 +1,11 @@
 # TODO
 
-### in progress
 - [x] add error handling for
     - [x] explore
     - [x] catch
-### future
+- [x] party system
+- [ ] implement pc for pokemon storage
 - [ ] great ball, ultra ball, master ball
-- [ ] party system
 - [ ] battle system
 - [ ] leveling system
+- [ ] persistent storage

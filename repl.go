@@ -11,12 +11,14 @@ import (
 )
 
 type config struct {
-	pokeAPIClient    pokeapi.Client
-	pokedex          *pokeapi.Pokedex
 	Next             *string
 	Previous         *string
 	VisitedLocations map[string]struct{}
+	pokeAPIClient    pokeapi.Client
+	pokedex          *pokeapi.Pokedex
+	Party            []string
 	Styles           ui.Styles
+	RL               *readline.Instance
 }
 
 func startRepl(cfg *config) {
@@ -33,8 +35,11 @@ func startRepl(cfg *config) {
 		panic(err)
 	}
 	defer l.Close()
+	// save readline instance in config for use in sub-menus
+	cfg.RL = l
+
 	for {
-		updateCompleter(l, cfg)
+		updateCompleter(cfg)
 
 		line, err := l.Readline()
 		if err != nil {
@@ -113,6 +118,16 @@ func getCommands() map[string]cliCommand {
 			description: "List all pokemon in your pokedex",
 			callback:    commandPokedex,
 		},
+		"party": {
+			name:        "party",
+			description: "List all pokemon in your party",
+			callback:    commandParty,
+		},
+		"release": {
+			name:        "release",
+			description: "Release a member from your party",
+			callback:    commandRelease,
+		},
 		"clear": {
 			name:        "clear",
 			description: "Clear the screen",
@@ -121,7 +136,7 @@ func getCommands() map[string]cliCommand {
 	}
 }
 
-func updateCompleter(l *readline.Instance, cfg *config) {
+func updateCompleter(cfg *config) {
 	var items []readline.PrefixCompleterInterface
 
 	// Build location items from VisitedLocations
@@ -137,17 +152,15 @@ func updateCompleter(l *readline.Instance, cfg *config) {
 	}
 
 	// assemble command tree
-
 	items = append(items,
 		readline.PcItem("explore", locationItems...),
 		readline.PcItem("inspect", pokemonItems...),
-		readline.PcItem("catch", pokemonItems...),
 		readline.PcItem("map"),
 		readline.PcItem("mapb"),
 		readline.PcItem("exit"),
 		readline.PcItem("clear"),
 	)
-	l.Config.AutoComplete = readline.NewPrefixCompleter(items...)
+	cfg.RL.Config.AutoComplete = readline.NewPrefixCompleter(items...)
 }
 
 func cleanInput(text string) []string {
