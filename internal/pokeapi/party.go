@@ -1,6 +1,6 @@
 package pokeapi
 
-func NewParty() *[]string {
-	newParty := []string{}
+func NewParty() *[]Pokemon {
+	newParty := []Pokemon{}
 	return &newParty
 }

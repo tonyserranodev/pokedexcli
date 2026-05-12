@@ -16,7 +16,8 @@ type config struct {
 	VisitedLocations map[string]struct{}
 	pokeAPIClient    pokeapi.Client
 	pokedex          *pokeapi.Pokedex
-	Party            []string
+	Party            *[]pokeapi.Pokemon
+	PC               *map[string]pokeapi.Pokemon
 	Styles           ui.Styles
 	RL               *readline.Instance
 }
@@ -127,6 +128,11 @@ func getCommands() map[string]cliCommand {
 			name:        "release",
 			description: "Release a member from your party",
 			callback:    commandRelease,
+		},
+		"pc": {
+			name:        "pc",
+			description: "View pokemon in your PC",
+			callback:    commandPC,
 		},
 		"clear": {
 			name:        "clear",
