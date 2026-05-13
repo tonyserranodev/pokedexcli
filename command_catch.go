@@ -6,12 +6,27 @@ import (
 	"math/rand/v2"
 	"strconv"
 
+	"github.com/tonyserranodev/pokedexcli/internal/items"
 	"github.com/tonyserranodev/pokedexcli/internal/pokeapi"
 )
 
 func commandCatch(cfg *config, args ...string) error {
-	if len(args) != 1 {
-		return errors.New("you must provide a pokemon name")
+	// name: args[0]
+	// ball type: args[1]
+
+	if len(args) != 2 {
+		return errors.New("you must provide a pokemon name and a ball name")
+	}
+
+	allBalls := items.GetAvailableBalls()
+	ballName := args[1]
+	ball, ok := allBalls[ballName]
+	if !ok {
+		return errors.New("that ball doesnt exist")
+	}
+
+	if cfg.Bag[ballName] <= 0 {
+		return fmt.Errorf("you dont have any %ss", ballName)
 	}
 
 	name := args[0]
@@ -21,10 +36,11 @@ func commandCatch(cfg *config, args ...string) error {
 	}
 
 	baseExp := pokemon.BaseExperience
+	mult := ball.Multiplier
 
 	fmt.Printf("Throwing a Pokeball at %s...\n", name)
-
-	if !shouldCatch(baseExp) {
+	cfg.Bag[ballName]--
+	if !shouldCatch(baseExp, mult) {
 		failedMsg := fmt.Sprintf(" %s escaped!", name)
 		fmt.Println(cfg.Styles.Colorize(failedMsg, "red"))
 		return nil
@@ -34,8 +50,8 @@ func commandCatch(cfg *config, args ...string) error {
 	fmt.Println(cfg.Styles.Colorize(caughtMsg, "green"))
 	cfg.pokedex.Caught[name] = pokemon
 
-	if len(*cfg.Party) < 6 {
-		*cfg.Party = append(*cfg.Party, pokemon)
+	if len(cfg.Party) < 6 {
+		cfg.Party = append(cfg.Party, pokemon)
 		fmt.Printf("%s was added to your party!\n", name)
 	} else {
 
@@ -54,14 +70,15 @@ func commandCatch(cfg *config, args ...string) error {
 	return nil
 }
 
-func shouldCatch(baseExp int) bool {
-	thresh := 50.0
-	return rand.Float64()*float64(baseExp) < thresh
+func shouldCatch(baseExp int, mult float64) bool {
+	fmt.Printf("base exp: %d\n", baseExp)
+	thresh := 35.0
+	return rand.Float64()*float64(baseExp) < (thresh * mult)
 }
 
 func handlePartySwap(cfg *config, newPokemon pokeapi.Pokemon) error {
 	fmt.Println("Select a party member to release")
-	for i, pokemon := range *cfg.Party {
+	for i, pokemon := range cfg.Party {
 		fmt.Printf("%d. %s\n", i+1, pokemon.Name)
 	}
 
@@ -77,14 +94,14 @@ func handlePartySwap(cfg *config, newPokemon pokeapi.Pokemon) error {
 
 	opt := words[0]
 	choice, err := strconv.Atoi(opt)
-	if err != nil || choice < 1 || choice > len(*cfg.Party) {
+	if err != nil || choice < 1 || choice > len(cfg.Party) {
 		fmt.Printf("Invalid choice. No changes made to your party")
 	}
 
 	index := choice - 1
-	oldName := (*cfg.Party)[index].Name
-	(*cfg.Party)[index] = newPokemon
-	(*cfg.PC)[newPokemon.Name] = newPokemon
+	oldName := (cfg.Party)[index].Name
+	(cfg.Party)[index] = newPokemon
+	(cfg.PC)[newPokemon.Name] = newPokemon
 
 	fmt.Printf("%s has been sent to your PC. %s has joined your party!\n", oldName, newPokemon.Name)
 	return nil

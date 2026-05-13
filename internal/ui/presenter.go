@@ -8,6 +8,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/tonyserranodev/pokedexcli/internal/pokeapi"
+	"github.com/tonyserranodev/pokedexcli/internal/trainer"
 )
 
 func (s Styles) DrawBox(title string, lines []string) {
@@ -57,7 +58,15 @@ func (s Styles) FormatPokemonInspect(p pokeapi.Pokemon) []string {
 	return lines
 }
 
-func (s Styles) FormatPokedex(pokedex *pokeapi.Pokedex) []string {
+func (s Styles) FormatBag(bag map[string]int) []string {
+	lines := []string{}
+	for name, quantity := range bag {
+		lines = append(lines, fmt.Sprintf("%s: %d", name, quantity))
+	}
+	return lines
+}
+
+func (s Styles) FormatPokedex(pokedex trainer.Pokedex) []string {
 	lines := []string{}
 	for _, p := range pokedex.Caught {
 		lines = append(lines, s.Colorize(fmt.Sprintf(" %s", capitalize(p.Name)), "yellow"))

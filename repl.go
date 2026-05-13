@@ -7,6 +7,7 @@ import (
 	"github.com/chzyer/readline"
 
 	"github.com/tonyserranodev/pokedexcli/internal/pokeapi"
+	"github.com/tonyserranodev/pokedexcli/internal/trainer"
 	"github.com/tonyserranodev/pokedexcli/internal/ui"
 )
 
@@ -15,9 +16,10 @@ type config struct {
 	Previous         *string
 	VisitedLocations map[string]struct{}
 	pokeAPIClient    pokeapi.Client
-	pokedex          *pokeapi.Pokedex
-	Party            *[]pokeapi.Pokemon
-	PC               *map[string]pokeapi.Pokemon
+	pokedex          trainer.Pokedex
+	Party            []pokeapi.Pokemon
+	PC               map[string]pokeapi.Pokemon
+	Bag              map[string]int
 	Styles           ui.Styles
 	RL               *readline.Instance
 }
@@ -133,6 +135,11 @@ func getCommands() map[string]cliCommand {
 			name:        "pc",
 			description: "View pokemon in your PC",
 			callback:    commandPC,
+		},
+		"bag": {
+			name:        "bag",
+			description: "View all items in your bag",
+			callback:    commandBag,
 		},
 		"clear": {
 			name:        "clear",
