@@ -107,9 +107,10 @@ func getCommands() map[string]cliCommand {
 			callback:    commandExplore,
 		},
 		"catch": {
-			name:        "catch <pokemon>",
-			description: "Attempt to catch a pokemon. The higher the pokemon experience the more difficult it will be to catch",
-			callback:    commandCatch,
+			name: "catch <pokemon> <pokeball>",
+			description: `Attempt to catch a pokemon. The higher the pokemon experience the more difficult it will be to catch.
+			    If a pokeball type is not specified, a regular pokeball will be thrown by default`,
+			callback: commandCatch,
 		},
 		"inspect": {
 			name:        "inspect <pokemon>",

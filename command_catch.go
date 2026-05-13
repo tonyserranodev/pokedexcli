@@ -14,12 +14,26 @@ func commandCatch(cfg *config, args ...string) error {
 	// name: args[0]
 	// ball type: args[1]
 
-	if len(args) != 2 {
-		return errors.New("you must provide a pokemon name and a ball name")
+	if len(args) == 0 {
+		return errors.New("you must provide a pokemon name")
 	}
 
 	allBalls := items.GetAvailableBalls()
-	ballName := args[1]
+	pokemonName := args[0]
+	var ballName string
+	if len(args) == 1 {
+		if cfg.Bag["pokeball"] <= 0 {
+			return errors.New("you don't have any pokeballs")
+		}
+		ballName = "pokeball"
+		ball, ok := allBalls[ballName]
+		if !ok {
+			return errors.New("that ball doesnt exist")
+		}
+		return catch(cfg, pokemonName, ballName, ball)
+	}
+
+	ballName = args[1]
 	ball, ok := allBalls[ballName]
 	if !ok {
 		return errors.New("that ball doesnt exist")
@@ -28,9 +42,12 @@ func commandCatch(cfg *config, args ...string) error {
 	if cfg.Bag[ballName] <= 0 {
 		return fmt.Errorf("you dont have any %ss", ballName)
 	}
+	return catch(cfg, pokemonName, ballName, ball)
 
-	name := args[0]
-	pokemon, err := cfg.pokeAPIClient.GetPokemon(name)
+}
+
+func catch(cfg *config, pokemonName, ballName string, ball items.Ball) error {
+	pokemon, err := cfg.pokeAPIClient.GetPokemon(pokemonName)
 	if err != nil {
 		return err
 	}
@@ -38,21 +55,21 @@ func commandCatch(cfg *config, args ...string) error {
 	baseExp := pokemon.BaseExperience
 	mult := ball.Multiplier
 
-	fmt.Printf("Throwing a Pokeball at %s...\n", name)
+	fmt.Printf("Throwing a Pokeball at %s...\n", pokemonName)
 	cfg.Bag[ballName]--
 	if !shouldCatch(baseExp, mult) {
-		failedMsg := fmt.Sprintf(" %s escaped!", name)
+		failedMsg := fmt.Sprintf(" %s escaped!", pokemonName)
 		fmt.Println(cfg.Styles.Colorize(failedMsg, "red"))
 		return nil
 	}
 
-	caughtMsg := fmt.Sprintf("%s was caught!", name)
+	caughtMsg := fmt.Sprintf("%s was caught!", pokemonName)
 	fmt.Println(cfg.Styles.Colorize(caughtMsg, "green"))
-	cfg.pokedex.Caught[name] = pokemon
+	cfg.pokedex.Caught[pokemonName] = pokemon
 
 	if len(cfg.Party) < 6 {
 		cfg.Party = append(cfg.Party, pokemon)
-		fmt.Printf("%s was added to your party!\n", name)
+		fmt.Printf("%s was added to your party!\n", pokemonName)
 	} else {
 
 		fmt.Println("Your party is full. Release a pokemon from your party? (y/n)")
@@ -62,12 +79,13 @@ func commandCatch(cfg *config, args ...string) error {
 		if len(words) > 0 && words[0] == "y" {
 			handlePartySwap(cfg, pokemon)
 		} else {
-			fmt.Printf("%s was sent to your pokedex\n", name)
+			fmt.Printf("%s was sent to your pokedex\n", pokemonName)
 		}
 	}
 
 	fmt.Println("You may now inspect it with the inspect command.")
 	return nil
+
 }
 
 func shouldCatch(baseExp int, mult float64) bool {

@@ -13,7 +13,7 @@ func GetAvailableBalls() map[string]Ball {
 			Multiplier: 1.0,
 		},
 		"greatball": {
-			Name:       "pgreatball",
+			Name:       "greatball",
 			Multiplier: 1.5,
 		},
 		"ultraball": {
